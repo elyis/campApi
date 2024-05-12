@@ -1,4 +1,5 @@
 using campapi.src.Domain.Enums;
+using campApi.src.Domain.Entities.Response;
 
 namespace campapi.src.Domain.Entities.Response
 {
@@ -11,5 +12,7 @@ namespace campapi.src.Domain.Entities.Response
         public string? Detachment { get; set; }
         public string? HeldPost { get; set; }
         public string? YearOfInitiation { get; set; }
+
+        public UserDocumentsBody Documents { get; set; }
     }
 }

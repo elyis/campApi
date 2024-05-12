@@ -44,7 +44,7 @@ namespace campapi.src.Web.Controllers
         )
         {
             var file = Request.Form.Files.FirstOrDefault();
-            var resultUpload = await UploadIconAsync(Constants.localPathToProfileIcons, file, new []{_supportedIconMime});
+            var resultUpload = await UploadIconAsync(Constants.localPathToProfileIcons, file, new[] { _supportedIconMime });
 
             if (resultUpload is OkObjectResult result)
             {
@@ -62,20 +62,17 @@ namespace campapi.src.Web.Controllers
 
         public async Task<IActionResult> UploadDocs(
             [FromHeader(Name = nameof(HttpRequestHeader.Authorization))] string token,
-            [FromQuery] string docName
+            [FromQuery] UserDocuments doc
         )
         {
-            if(!Enum.TryParse(typeof(UserDocuments), docName, true, out var userDocument))
-                return BadRequest();
-
             var file = Request.Form.Files.FirstOrDefault();
-            var resultUpload = await UploadIconAsync(Constants.localPathToProfileIcons, file, new [] { _supportedIconMime, "application/pdf"});
+            var resultUpload = await UploadIconAsync(Constants.localPathToProfileIcons, file, new[] { _supportedIconMime, "application/pdf" });
 
             if (resultUpload is OkObjectResult result)
             {
                 var filename = (string)result.Value;
                 var tokenInfo = _jwtService.GetTokenInfo(token);
-                await _userRepository.UpdateDocument(tokenInfo.UserId, (UserDocuments)userDocument, filename);
+                await _userRepository.UpdateDocument(tokenInfo.UserId, doc, filename);
             }
             return resultUpload;
         }
@@ -105,7 +102,7 @@ namespace campapi.src.Web.Controllers
             var bytes = await _fileUploaderService.GetStreamFileAsync(path, filename);
             if (bytes == null)
                 return NotFound();
-            
+
             var extension = Path.GetExtension(filename);
             var mimeType = MimeTypeMap.GetMimeType(extension);
             return File(bytes, mimeType, filename);
@@ -119,14 +116,14 @@ namespace campapi.src.Web.Controllers
             var stream = file.OpenReadStream();
             var mimeTypes = _contentInspector.Inspect(stream).ByMimeType();
             var bestMatchMimeType = mimeTypes.MaxBy(e => e.Points)?.MimeType;
-            if(bestMatchMimeType == null)
+            if (bestMatchMimeType == null)
                 return new UnsupportedMediaTypeResult();
 
 
             bool isSupportedType = false;
-            foreach(var supportedMime in supportedMimes)
+            foreach (var supportedMime in supportedMimes)
             {
-                if(bestMatchMimeType.StartsWith(_supportedIconMime) || supportedMime == bestMatchMimeType)
+                if (bestMatchMimeType.StartsWith(_supportedIconMime) || supportedMime == bestMatchMimeType)
                 {
                     isSupportedType = true;
                     break;

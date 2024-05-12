@@ -1,6 +1,7 @@
 using campapi.src.Infrastructure.Data;
 using campApi.src.Domain.Entities.Request;
 using campApi.src.Domain.Entities.Response;
+using campApi.src.Domain.Enums;
 using campApi.src.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +27,17 @@ namespace campApi.src.Web.Controllers
 
         public async Task<IActionResult> CreateQuestion(CreateQuestionBody body)
         {
-            if(body.Answers.Count == 0)
+            if (body.Answers.Count == 0)
                 return BadRequest("no answers");
 
-            if(body.Answers.Count > body.RightAnswerIndex && body.RightAnswerIndex >= 0)
+            if (body.Answers.Count > body.RightAnswerIndex && body.RightAnswerIndex >= 0)
             {
                 var question = new QuestionModel
                 {
                     Description = body.Description,
                     RightAnswerIndex = body.RightAnswerIndex,
-                    Answers = string.Join(";", body.Answers)
+                    Answers = string.Join(";", body.Answers),
+                    Type = body.Type.ToString()
                 };
 
                 await _context.Questions.AddAsync(question);
@@ -48,10 +50,11 @@ namespace campApi.src.Web.Controllers
 
         [HttpGet("questions"), Authorize]
         [SwaggerOperation("Получить вопросы")]
-        [SwaggerResponse(200,  Type = typeof(IEnumerable<QuestionWithAnswersBody>))]
-        public async Task<IActionResult> GetQuestions()
+        [SwaggerResponse(200, Type = typeof(IEnumerable<QuestionWithAnswersBody>))]
+        public async Task<IActionResult> GetQuestions([FromQuery] QuestionType type)
         {
-            var questions = await _context.Questions.ToListAsync();
+            var questionType = type.ToString();
+            var questions = await _context.Questions.Where(e => e.Type == questionType).ToListAsync();
             return Ok(questions.Select(e => e.ToQuestionWithAnswersBody()));
         }
     }
