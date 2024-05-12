@@ -29,6 +29,7 @@ namespace campapi.src.Infrastructure.Repository
                 Email = body.Email,
                 Password = Hmac512Provider.Compute(body.Password),
                 RoleName = role,
+                Fullname = body.Fullname
             };
 
             var result = await _context.Users.AddAsync(newUser);
@@ -47,10 +48,11 @@ namespace campapi.src.Infrastructure.Repository
         public async Task<UserModel?> UpdateDocument(Guid id, UserDocuments userDocument, string filename)
         {
             var user = await GetAsync(id);
-            if(user == null)
+            if (user == null)
                 return null;
 
-            switch(userDocument){
+            switch (userDocument)
+            {
                 case UserDocuments.SanitaryMinimum:
                     user.SanitaryMinimumFilename = filename;
                     break;
@@ -93,7 +95,7 @@ namespace campapi.src.Infrastructure.Repository
         public async Task<UserModel?> UpdateProfileInfo(Guid id, UpdatedProfileInfo profileInfo)
         {
             var user = await GetAsync(id);
-            if(user == null)
+            if (user == null)
                 return null;
 
             user.HeldPost = profileInfo.HeldPost;

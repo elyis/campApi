@@ -15,6 +15,7 @@ namespace campapi.src.Domain.Models
         [StringLength(256, MinimumLength = 3)]
         public string Email { get; set; }
         public string Password { get; set; }
+        public string Fullname { get; set; }
         public string RoleName { get; set; }
         public string? Token { get; set; }
         public string? Image { get; set; }
