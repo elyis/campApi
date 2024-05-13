@@ -44,6 +44,7 @@ namespace campapi.src.Domain.Models
                 Headquarters = Headquarters,
                 HeldPost = HeldPost,
                 YearOfInitiation = YearOfInitiation,
+                Documents = ToUserDocumentsBody()
             };
         }
 
